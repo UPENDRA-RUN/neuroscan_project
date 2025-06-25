@@ -264,22 +264,37 @@ def main_interface():
     )
 
     if uploaded_file:
+        # Check file size before processing
+        if uploaded_file.size > 5 * 1024 * 1024 * 1024:  # 5GB limit
+            st.error("File too large. Please upload a file smaller than 5GB.")
+            return
+
         with st.spinner(f"Processing {uploaded_file.name}..."):
-            img, temp_path = load_nifti(uploaded_file)
+            try:
+                img, temp_path = load_nifti(uploaded_file)
 
-            if img:
-                try:
-                    data = img.get_fdata()
-                    if data.ndim == 4:
-                        data = data.mean(axis=-1)
+                if img:
+                    try:
+                        data = img.get_fdata()
+                        if data.ndim == 4:
+                            data = data.mean(axis=-1)
 
-                    if data.ndim != 3:
-                        st.error("3D volume required")
-                        st.stop()
+                        if data.ndim != 3:
+                            st.error("3D volume required")
+                            return
 
-                    optimized_data = optimize_data(data)
-                    risk_score, biomarkers = analyze_scan(optimized_data)
-                    probabilities = diagnose_disorder(biomarkers)
+                        optimized_data = optimize_data(data)
+                        risk_score, biomarkers = analyze_scan(optimized_data)
+                        probabilities = diagnose_disorder(biomarkers)
+                    except MemoryError:
+                        st.error("File too large to process. Please try a smaller file.")
+                        return
+                    except Exception as e:
+                        st.error(f"Error processing scan data: {str(e)}")
+                        return
+            except Exception as e:
+                st.error(f"Error loading file: {str(e)}")
+                return
 
                     with st.container():
                         col1, col2 = st.columns([1, 2])
