@@ -1,0 +1,1 @@
+This is a dataset to accompany the 2023 journal submission Characterizing medial temporal lobe vulnerability to neurofibrillary tangle pathology in Alzheimer’s disease using a 3-D ex vivo MRI atlas and serial histology
