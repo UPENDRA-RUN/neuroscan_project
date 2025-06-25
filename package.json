@@ -4,9 +4,11 @@
   "description": "NeuroScan Pro - Advanced Neuroimaging Analytics Platform",
   "main": "app.py",
   "scripts": {
-    "dev": "streamlit run app.py --server.port 3000 --server.address 0.0.0.0",
+    "predev": "python3 -c \"import streamlit\" 2>/dev/null || (echo 'Installing Python dependencies...' && python3 -m pip install --user -r requirements.txt)",
+    "dev": "streamlit run app.py --server.port 3000 --server.address 0.0.0.0 --browser.gatherUsageStats false",
     "start": "streamlit run app.py",
-    "install-python": "pip3 install -r requirements.txt || python3 -m pip install -r requirements.txt"
+    "setup": "python3 -m pip install --user -r requirements.txt",
+    "check": "python3 -c \"import streamlit, nibabel, numpy, matplotlib; print('All dependencies installed!')\""
   },
   "keywords": [
     "neuroimaging",
