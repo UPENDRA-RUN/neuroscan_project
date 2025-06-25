@@ -25,11 +25,16 @@ st.set_page_config(
     page_icon="🧠"
 )
 
+# Initialize session state for stability
+if 'initialized' not in st.session_state:
+    st.session_state.initialized = True
+    st.session_state.file_size = 0
+
 # ==================== CSS STYLING ====================
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
-    
+
     :root {
         --primary: #6366f1;
         --secondary: #4f46e5;
@@ -37,24 +42,24 @@ st.markdown("""
         --bg: #0f172a;
         --card-bg: #1e293b;
     }
-    
+
     * {
         font-family: 'Inter', sans-serif;
         margin: 0;
         padding: 0;
         box-sizing: border-box;
     }
-    
+
     .main {
         background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         color: white !important;
     }
-    
+
     .stApp {
         background: var(--bg);
         min-height: 100vh;
     }
-    
+
     .stFileUploader {
         border: 2px dashed var(--primary) !important;
         border-radius: 20px !important;
@@ -62,12 +67,12 @@ st.markdown("""
         padding: 2rem !important;
         transition: all 0.3s ease;
     }
-    
+
     .stFileUploader:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 20px rgba(99, 102, 241, 0.1);
     }
-    
+
     .metric-card {
         background: var(--card-bg);
         border-radius: 16px;
@@ -77,7 +82,7 @@ st.markdown("""
         box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         transition: transform 0.3s ease;
     }
-    
+
     .diagnosis-badge {
         background: var(--card-bg);
         padding: 1rem;
@@ -87,11 +92,11 @@ st.markdown("""
         overflow: hidden;
         transition: transform 0.3s ease;
     }
-    
+
     .diagnosis-badge:hover {
         transform: translateY(-3px);
     }
-    
+
     .diagnosis-badge::before {
         content: '';
         position: absolute;
@@ -101,7 +106,7 @@ st.markdown("""
         height: 100%;
         background: var(--accent);
     }
-    
+
     footer {
         position: relative;
         bottom: 0;
@@ -116,10 +121,10 @@ st.markdown("""
 # ==================== APP HEADER ====================
 st.markdown("""
     <div style="text-align: center; margin-bottom: 3rem; padding-top: 2rem;">
-        <h1 style="font-size: 3.5rem; margin: 0; 
+        <h1 style="font-size: 3.5rem; margin: 0;
             background: linear-gradient(45deg, #6366f1, #a855f7);
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             font-weight: 800;
             letter-spacing: -1.5px;">
             NEUROSCAN PRO
@@ -163,10 +168,10 @@ def optimize_data(data: np.ndarray) -> np.ndarray:
     """Adaptive data optimization"""
     file_size = st.session_state.get('file_size', 0)
     factor = 4 if file_size > 500 else 2 if file_size > 200 else 1
-    
+
     optimized = data[::factor, ::factor, ::factor].astype(np.float32)
     optimized = (optimized - np.min(optimized)) / (np.ptp(optimized) + 1e-8)
-    
+
     del data
     gc.collect()
     return optimized
@@ -216,7 +221,7 @@ def risk_gauge(value: float):
     else:
         fig, ax = plt.subplots(figsize=(6,6))
         ax.axis('off')
-        ax.text(0.5, 0.6, f"{value*100:.1f}%", 
+        ax.text(0.5, 0.6, f"{value*100:.1f}%",
                fontsize=40, ha='center', color='white')
         return fig
 
@@ -225,7 +230,7 @@ def analyze_scan(data: np.ndarray) -> Tuple[float, Dict]:
     """Biomarker analysis"""
     intensity = np.mean(data)
     risk = np.clip(abs(intensity - 50) / 50, 0.0, 1.0)
-    
+
     return risk, {
         'hippocampal_volume': int(7000 - risk * 4500),
         'amyloid_plaques': int(risk * 100),
@@ -253,7 +258,7 @@ def diagnose_disorder(biomarkers: Dict) -> Dict:
 def main_interface():
     """Primary application interface"""
     uploaded_file = st.file_uploader(
-        "Drag & Drop Brain MRI Scan (.nii/.nii.gz)", 
+        "Drag & Drop Brain MRI Scan (.nii/.nii.gz)",
         type=["nii", "gz"],
         help="Maximum file size: 5GB"
     )
@@ -261,13 +266,13 @@ def main_interface():
     if uploaded_file:
         with st.spinner(f"Processing {uploaded_file.name}..."):
             img, temp_path = load_nifti(uploaded_file)
-            
+
             if img:
                 try:
                     data = img.get_fdata()
                     if data.ndim == 4:
                         data = data.mean(axis=-1)
-                    
+
                     if data.ndim != 3:
                         st.error("3D volume required")
                         st.stop()
@@ -278,7 +283,7 @@ def main_interface():
 
                     with st.container():
                         col1, col2 = st.columns([1, 2])
-                        
+
                         # Left Column
                         with col1:
                             st.markdown("### 🧭 Risk Overview")
@@ -286,7 +291,7 @@ def main_interface():
                                 st.plotly_chart(risk_gauge(risk_score), use_container_width=True)
                             else:
                                 st.pyplot(risk_gauge(risk_score))
-                            
+
                             st.markdown("### 🧬 Biomarkers")
                             st.markdown(f"""
                             <div class="metric-card">
@@ -295,7 +300,7 @@ def main_interface():
                                 <div style="color: #f59e0b;">Normal: 6000-7000 mm³</div>
                             </div>
                             """, unsafe_allow_html=True)
-                            
+
                             st.markdown(f"""
                             <div class="metric-card">
                                 <div>Amyloid Plaques</div>
@@ -321,7 +326,7 @@ def main_interface():
                                     st.plotly_chart(fig, use_container_width=True)
                                 else:
                                     st.pyplot(fig)
-                            
+
                             st.markdown("### 📊 Diagnosis Probabilities")
                             cols = st.columns(2)
                             for i, (cond, prob) in enumerate(probabilities.items()):
@@ -358,7 +363,7 @@ def main_interface():
 st.markdown("""
     <footer>
         <hr style="border-color: #1e293b;">
-        NEUROSCAN PRO v4.0 | 🔒 HIPAA Compliant | 
+        NEUROSCAN PRO v4.0 | 🔒 HIPAA Compliant |
         <span style="color: #6366f1;">Research Use Only</span>
     </footer>
 """, unsafe_allow_html=True)
