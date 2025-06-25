@@ -1,0 +1,136 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-white text-gray-900 font-sans;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* Medical UI Components */
+  .medical-card {
+    @apply bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300;
+  }
+
+  .medical-button {
+    @apply inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .medical-button-primary {
+    @apply medical-button bg-medical-primary text-white hover:bg-medical-secondary focus:ring-medical-primary shadow-sm hover:shadow-md;
+  }
+
+  .medical-button-secondary {
+    @apply medical-button bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-500;
+  }
+
+  .neural-glow {
+    @apply relative overflow-hidden;
+  }
+
+  .neural-glow::before {
+    content: "";
+    @apply absolute inset-0 bg-gradient-to-r from-neural-400/20 via-neural-500/20 to-neural-600/20 opacity-0 transition-opacity duration-500;
+  }
+
+  .neural-glow:hover::before {
+    @apply opacity-100;
+  }
+
+  /* Brain Visualization Styles */
+  .brain-container {
+    @apply relative w-full h-full flex items-center justify-center;
+  }
+
+  .brain-node {
+    @apply absolute w-2 h-2 bg-neural-400 rounded-full animate-pulse-slow;
+  }
+
+  .brain-connection {
+    @apply absolute bg-gradient-to-r from-neural-300 to-neural-500 opacity-60;
+    height: 1px;
+  }
+
+  /* Medical Data Visualization */
+  .stats-counter {
+    @apply text-4xl font-bold bg-gradient-to-r from-medical-primary to-neural-500 bg-clip-text text-transparent;
+  }
+
+  .pulse-ring {
+    @apply absolute rounded-full border-2 border-neural-400 opacity-20 animate-ping;
+  }
+
+  /* Glassmorphism Effect */
+  .glass {
+    @apply backdrop-blur-sm bg-white/10 border border-white/20 shadow-xl;
+  }
+
+  .glass-dark {
+    @apply backdrop-blur-sm bg-gray-900/10 border border-gray-800/20;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
+
+  .animation-delay-600 {
+    animation-delay: 600ms;
+  }
+
+  .animation-delay-800 {
+    animation-delay: 800ms;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400;
+}
+
+/* Selection styles */
+::selection {
+  @apply bg-neural-200 text-neural-900;
+}
+
+/* Focus styles */
+.focus-visible {
+  @apply focus:outline-none focus:ring-2 focus:ring-medical-primary focus:ring-offset-2;
+}
