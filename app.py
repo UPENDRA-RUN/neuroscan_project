@@ -132,6 +132,9 @@ st.markdown("""
         <p style="font-size: 1.2rem; color: #94a3b8; margin-top: 0.5rem;">
             Advanced Neuroimaging Analytics Platform
         </p>
+        <div style="font-size: 0.9rem; color: #10b981; margin-top: 0.5rem;">
+            🟢 Connected
+        </div>
     </div>
 """, unsafe_allow_html=True)
 
